@@ -1,18 +1,19 @@
-// server.js
-// where your node app starts
-
+require('dotenv').config();
 var express = require('express');
-var app = express();
-
 var cors = require('cors');
-app.use(cors({optionsSuccessStatus: 200}));  // some legacy browsers choke on 204
+var bodyParser = require('body-parser');
+const dns = require('dns');
 
-app.use(express.static('public'));
+var app = express();
+app.use(cors({optionsSuccessStatus: 200}));  // some legacy browsers choke on 204
+app.use(
+  '/public',
+  express.static(`${process.cwd()}/public`)
+);
 
 app.get("/", function (req, res) {
-  res.sendFile(__dirname + '/views/index.html');
+  res.sendFile(process.cwd() + '/views/index.html');
 });
-
 
 app.get("/api/timestamp/", function(req, res) {
   res.json({
@@ -38,8 +39,43 @@ app.get("/api/timestamp/:date_string?", function(req, res) {
   });
 });
 
-
-var listener = app.listen(process.env.PORT, function () {
-  console.log('Your app is listening on port ' + listener.address().port);
+app.get("/api/whoami", function(req, res) {
+  res.json({
+    "ipaddress": req.connection.remoteAddress,
+    "language": req.headers["accept-language"],
+    "software": req.headers["user-agent"]
+  })
 });
 
+var urlParser = bodyParser.urlencoded({ extended: false });
+const createURL = require("./database.js").createAndSaveURL;
+const findURL = require("./database.js").findURLByShort;
+const getRandomInt = (max) => {
+  return Math.floor(Math.random() * Math.floor(max));
+};
+app.post("/api/shorturl/new", urlParser, function(req, res) {
+  const original_url = req.body.url.replace(/^https?:\/\//, '');
+  dns.lookup(original_url, (err, address, family) => {
+    if (err) res.json({ error: 'invalid url' })
+    else console.log(`Address: ${address}, IPv${family}`);
+  });
+  url_mapping = {
+    original_url: original_url,
+    short_url: getRandomInt(1000)
+  };
+  createURL(url_mapping, (status, data) => {});
+  res.json(url_mapping);
+});
+
+app.get("/api/shorturl/\\d+$", function(req, res) {
+  const parsedUrl = req.originalUrl.split("/");
+  const id = parsedUrl[parsedUrl.length - 1];
+  // var result = findURL(req, () => {});
+  // console.log(result);
+});
+
+/* Listening to specified port */
+const port = process.env.PORT || 3000;
+var listener = app.listen(port, function () {
+  console.log(`Your app is listening on ${port}`);
+});
