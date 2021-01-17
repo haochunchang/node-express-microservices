@@ -19,13 +19,5 @@ const createAndSaveURL = (url, done) => {
   });
 };
 
-const findURLByShort = (shortURL, done) => {
-  URL.findById(shortURL, function(err, data) {
-    if (err) return done(err);
-    done(null, data);
-  });
-};
-
 exports.URLModel = URL;
 exports.createAndSaveURL = createAndSaveURL;
-exports.findURLByShort = findURLByShort;

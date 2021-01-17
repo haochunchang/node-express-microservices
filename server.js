@@ -48,8 +48,8 @@ app.get("/api/whoami", function(req, res) {
 });
 
 var urlParser = bodyParser.urlencoded({ extended: false });
+const URL = require("./database.js").URLModel;
 const createURL = require("./database.js").createAndSaveURL;
-const findURL = require("./database.js").findURLByShort;
 const getRandomInt = (max) => {
   return Math.floor(Math.random() * Math.floor(max));
 };
@@ -63,16 +63,19 @@ app.post("/api/shorturl/new", urlParser, function(req, res) {
     original_url: original_url,
     short_url: getRandomInt(1000)
   };
-  createURL(url_mapping, (status, data) => {});
+  createURL(url_mapping, (_1, _2) => {});
   res.json(url_mapping);
 });
 
-app.get("/api/shorturl/\\d+$", function(req, res) {
-  const parsedUrl = req.originalUrl.split("/");
-  const id = parsedUrl[parsedUrl.length - 1];
-  // var result = findURL(req, () => {});
-  // console.log(result);
-});
+app.get('/api/shorturl/:route', async (req, res) => {
+  const route = req.params.route;
+  const instance = await URL.findOne({short_url: route});
+  if (instance) {
+    res.redirect(`//${instance.original_url}`);
+  } else {
+    res.send("404");
+  }
+})
 
 /* Listening to specified port */
 const port = process.env.PORT || 3000;
