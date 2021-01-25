@@ -1,14 +1,13 @@
 var mongoose = require("mongoose");
-const urlSchema = new mongoose.Schema({
-  original_url: { type: String, required: true },
-  short_url: String
-});
-
 mongoose.connect(
   process.env.MONGO_URI,
   { useNewUrlParser: true, useUnifiedTopology: true }
 );
 
+const urlSchema = new mongoose.Schema({
+  original_url: { type: String, required: true },
+  short_url: String
+});
 let URL = mongoose.model('URL', urlSchema);
 
 const createAndSaveURL = (url, done) => {

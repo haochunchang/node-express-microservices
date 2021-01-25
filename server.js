@@ -6,13 +6,14 @@ var sha1 = require('js-sha1');
 var dns = require('dns');
 
 var app = express();
-app.use(cors({optionsSuccessStatus: 200}));  // some legacy browsers choke on 204
+app.use(cors({optionsSuccessStatus: 200}));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(
   '/public',
   express.static(`${process.cwd()}/public`)
 );
 
+/* API endpoints */
 app.get("/", function (req, res) {
   return res.sendFile(process.cwd() + '/views/index.html');
 });
@@ -24,6 +25,7 @@ app.get("/api/timestamp/", function(req, res) {
   });
 });
 
+/** Get UNIX and UTC timestamp */
 app.get("/api/timestamp/:date_string?", function(req, res) {
   const dateString = req.params.date_string;
   let date;
@@ -41,6 +43,7 @@ app.get("/api/timestamp/:date_string?", function(req, res) {
   });
 });
 
+/** Get browser header information */
 app.get("/api/whoami", function(req, res) {
   return res.json({
     "ipaddress": req.connection.remoteAddress,
@@ -49,11 +52,11 @@ app.get("/api/whoami", function(req, res) {
   })
 });
 
+/** For URL shortener */
+const URL = require("./url_db.js").URLModel;
+const createURL = require("./url_db.js").createAndSaveURL;
 
-/* URL Shortener */
-const URL = require("./database.js").URLModel;
-const createURL = require("./database.js").createAndSaveURL;
-
+/** Redirect to original URL given short URL */
 app.get('/api/shorturl/:route', async (req, res) => {
   const route = req.params.route;
   const instance = await URL.findOne({short_url: route});
@@ -64,6 +67,7 @@ app.get('/api/shorturl/:route', async (req, res) => {
   }
 })
 
+/** Create a new short URL for given URL */
 app.post("/api/shorturl/new", function(req, res) {
   const original_url = req.body.url;
   const hostname = original_url
@@ -85,6 +89,96 @@ app.post("/api/shorturl/new", function(req, res) {
     });
   });
 });
+
+/* For Exercise tracker */
+const User = require("./exercise_db.js").User;
+
+/** Create a new user with unique username */
+app.post("/api/exercise/new-user", async (req, res) => {
+  const name = req.body.username;
+  const instance = await User.findOne({ username: name });
+  if (!instance) {
+    // Create new user in database
+    const new_user = new User({ username: name });
+    await new_user.save();
+    return res.json({
+      username: name,
+      _id: new_user._id
+    });
+  }
+  return res.send("Username already taken");
+});
+
+/** Get all user data in an arry */
+app.get("/api/exercise/users", async (req, res) => {
+  const users = await User.find();
+  if (users) {
+    return res.json(users);
+  }
+  return res.send("There is no user.");
+});
+
+/** Get user data by username */
+app.get("/api/exercise/user/:name", async (req, res) => {
+  const name = req.params.name;
+  const user = await User.findOne({ username: name });
+  if (user) {
+    return res.json(user);
+  }
+  return res.send("There is no such user.");
+});
+
+/** Add exercise entry for one user */
+app.post("/api/exercise/add", async (req, res) => {
+  const user = await User.findById(req.body.userId);
+  if (user) {
+    let date = new Date();
+    let new_log = {
+      __id: req.body.userId,
+      description: req.body.description,
+      duration: parseInt(req.body.duration),
+      date: date.toISOString().substring(0,10)
+    };
+    if (req.body.date) {
+      new_log.date = new Date(req.body.date);
+    }
+    user.log.push(new_log);
+    await user.save();
+
+    new_log.username = user.username;
+    return res.json(new_log);
+  }
+  return res.send("There is no such user.");
+});
+
+/** Get full exercise log from a given user */
+app.get("/api/exercise/log", async (req, res) => {
+  const query = req.query;
+  if (query.userId) {
+    let user;
+    try {
+      user = await User.findById(query.userId);
+    } catch {
+      return res.send("Cannot find userId");
+    }
+    if (query.from) {
+      user.log = user.log.filter(function(el) {
+        return Date(el.date) >= Date(query.from);
+      });
+    }
+    if (query.to) {
+      user.log = user.log.filter(function(el) {
+        return Date(el.date) <= Date(query.to);
+      });
+    }
+    if (query.limit) {
+      user.log = user.log.slice(1, parseInt(query.limit));
+    }
+    return res.json(user);
+  }
+  return res.send("Unknown userId");
+});
+
 
 /* Listening to specified port */
 const port = process.env.PORT || 3000;
