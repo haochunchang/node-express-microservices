@@ -134,13 +134,13 @@ app.post("/api/exercise/add", async (req, res) => {
   if (user) {
     let date = new Date();
     let new_log = {
-      __id: req.body.userId,
+      _id: req.body.userId,
       description: req.body.description,
       duration: parseInt(req.body.duration),
-      date: date.toISOString().substring(0,10)
+      date: date.toDateString().toString()
     };
     if (req.body.date) {
-      new_log.date = new Date(req.body.date);
+      new_log.date = new Date(req.body.date).toDateString().toString();
     }
     user.log.push(new_log);
     await user.save();
@@ -157,23 +157,25 @@ app.get("/api/exercise/log", async (req, res) => {
   if (query.userId) {
     let user;
     try {
-      user = await User.findById(query.userId);
+      user = await User.findById(query.userId).lean();
     } catch {
       return res.send("Cannot find userId");
     }
     if (query.from) {
       user.log = user.log.filter(function(el) {
-        return Date(el.date) >= Date(query.from);
+        return Date.parse(el.date) >= Date.parse(query.from);
       });
     }
     if (query.to) {
       user.log = user.log.filter(function(el) {
-        return Date(el.date) <= Date(query.to);
+        return Date.parse(el.date) <= Date.parse(query.to);
       });
     }
     if (query.limit) {
-      user.log = user.log.slice(1, parseInt(query.limit));
+      user.log = user.log.slice(1, parseInt(query.limit) + 1);
     }
+    user.count = user.log.length;
+    delete user.__v;
     return res.json(user);
   }
   return res.send("Unknown userId");
