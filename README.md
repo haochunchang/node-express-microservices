@@ -2,4 +2,7 @@
 # Microservices Practices
 
 - [x] Timestamp
-- [ ] Request Header Parser
+- [x] Request Header Parser
+- [x] URL Shortener
+- [x] Exercise Tracker
+- [ ] File Metadata
