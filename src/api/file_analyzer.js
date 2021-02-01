@@ -1,13 +1,12 @@
 /** Analyze uploaded files */
 const multer = require('multer');
 const path = require('path');
-
 const storage = multer.diskStorage({
-  destination: function(_req, _file, cb) {
+  destination: (_req, _file, cb) => {
     cb(null, 'uploads/');
   },
 
-  filename: function(req, file, cb) {
+  filename: (_req, file, cb) => {
     cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname));
   }
 });
