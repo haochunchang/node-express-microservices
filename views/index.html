@@ -75,6 +75,18 @@
       <p><strong>{ }</strong> = required, <strong>[ ]</strong> = optional</p>
       <p><strong>from, to</strong> = dates (yyyy-mm-dd); <strong>limit</strong> = number</p>
     </div>
+    <div class="container">
+      <h2>5. File Metadata Microservice</h2>
+
+      <h3>Usage: Upload a File ...</h3>
+      <div class="view">
+        <h4 id="output"></h4>
+        <form enctype="multipart/form-data" method="POST" action="/api/fileanalyze">
+          <input id="inputfield" type="file" name="upfile">
+          <input id="button" type="submit" value="Upload">
+        </form>
+      </div>
+    </div>
     <footer class="footer">
       <p>
         By <a href="https://github.com/haochunchang/node-express-microservices">Hao Chun Chang</a>

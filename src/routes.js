@@ -19,5 +19,7 @@ router.route('/exercise/user/:name').get(exercise.getUserByName);
 router.route('/exercise/add').post(exercise.addExercise);
 router.route('/exercise/log').get(exercise.getFullExercise);
 
+var file_analyzer = require('./api/file_analyzer');
+router.route('/fileanalyze').post(file_analyzer.getFileMetadata);
 
 module.exports = router;
