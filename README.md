@@ -1,2 +1,8 @@
 
-# [Timestamp Microservice](https://www.freecodecamp.org/learn/apis-and-microservices/apis-and-microservices-projects/timestamp-microservice)
+# Microservices Practices
+
+- [x] Timestamp
+- [x] Request Header Parser
+- [x] URL Shortener
+- [x] Exercise Tracker
+- [x] File Metadata

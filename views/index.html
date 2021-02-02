@@ -2,16 +2,14 @@
 
 <html>
    <head>
-      <title>Timestamp Microservice | freeCodeCamp.org</title>
-      <link rel="shortcut icon" href="https://cdn.freecodecamp.org/universal/favicons/favicon-32x32.png" type="image/x-icon"/>
+      <title>Microservice Project</title>
       <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet" type="text/css">
-      <link href="style.css" rel="stylesheet" type="text/css">
+      <link href="/public/style.css" rel="stylesheet" type="text/css">
    </head>
 
    <body>
-    <h1>Timestamp Microservice</h1>
-    <hr />
     <div class="container">
+      <h2>1. Timestamp Microservice</h2>
       <h3>Example Usage:</h3>
       <ul>
         <li><a href="api/timestamp/2015-12-25">[project url]/api/timestamp/2015-12-25</a></li>
@@ -23,10 +21,76 @@
         <code>{"unix":1451001600000, "utc":"Fri, 25 Dec 2015 00:00:00 GMT"}</code>
       </p>
     </div>
-    <div class="footer">
+    <hr />
+    <div class="container">
+      <h2>2. Request Header Parser Microservice</h2>
+      <h3>Example Usage:</h3>
+      <a href="api/whoami">
+        [project url]/api/whoami
+      </a>
+
+      <h3>Example Output:</h3>
       <p>
-        By <a href="https://www.freecodecamp.org/">freeCodeCamp.org</a>
+        <code>{"ipaddress":"159.20.14.100","language":"en-US,en;q=0.5",<br>"software":"Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:50.0) Gecko/20100101 Firefox/50.0"}</code>
       </p>
     </div>
+    <hr />
+    <div class="container">
+        <h2>3. URL Shortener Microservice</h2>
+        <h3>Short URL Creation </h3>
+        <p>
+          example: <code>POST [project_url]/api/shorturl/new</code> - <code>https://www.google.com</code>
+        </p>
+        <form action="api/shorturl/new" method="POST">
+          <label for="url_input">URL to be shortened</label>
+          <input id="url_input" type="text" name="url" value="https://www.freecodecamp.org">
+          <input type="submit" value="POST URL">
+        </form>
+        <h3>Example Usage:</h3>
+        <a href="api/shorturl/3">
+          [this_project_url]/api/shorturl/3
+        </a>
+        <h3>Will Redirect to:</h3>
+        <p>https://forum.freecodecamp.org/</p>
+    </div>
+    <hr/>
+    <div class="container">
+      <h1>4. Exercise tracker</h1>
+      <form action="/api/exercise/new-user" method="post">
+        <h3>Create a New User</h3>
+        <p><code>POST /api/exercise/new-user</code></p>
+        <input id="uname" type="text" name="username" placeholder="username">
+        <input type="submit" value="Submit">
+      </form>
+      <form action="/api/exercise/add" method="post">
+        <h3>Add exercises</h3>
+        <p><code>POST /api/exercise/add</code></p>
+        <input id="uid" type="text" name="userId" placeholder="userId*">
+        <input id="desc" type="text" name="description" placeholder="description*">
+        <input id="dur" type="text" name="duration" placeholder="duration* (mins.)">
+        <input id="dat" type="text" name="date" placeholder="date (yyyy-mm-dd)">
+        <input type="submit" value="Submit">
+      </form>
+      <p><strong>GET users's exercise log: </strong><code>GET /api/exercise/log?{userId}[&amp;from][&amp;to][&amp;limit]</code></p>
+      <p><strong>{ }</strong> = required, <strong>[ ]</strong> = optional</p>
+      <p><strong>from, to</strong> = dates (yyyy-mm-dd); <strong>limit</strong> = number</p>
+    </div>
+    <div class="container">
+      <h2>5. File Metadata Microservice</h2>
+
+      <h3>Usage: Upload a File ...</h3>
+      <div class="view">
+        <h4 id="output"></h4>
+        <form enctype="multipart/form-data" method="POST" action="/api/fileanalyze">
+          <input id="inputfield" type="file" name="upfile">
+          <input id="button" type="submit" value="Upload">
+        </form>
+      </div>
+    </div>
+    <footer class="footer">
+      <p>
+        By <a href="https://github.com/haochunchang/node-express-microservices">Hao Chun Chang</a>
+      </p>
+    </footer>
   </body>
 </html>
