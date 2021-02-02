@@ -14,7 +14,7 @@ function shortenURL(req, res) {
 
   dns.lookup(hostname, (err, address) => {
     if (err || !address) return res.json({ error: 'invalid url' });
-    url = {
+    const url = {
       original_url: original_url,
       short_url: sha1(original_url).slice(0, 5)
     };

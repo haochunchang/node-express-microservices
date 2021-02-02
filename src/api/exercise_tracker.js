@@ -75,17 +75,19 @@ async function getFullExercise(req, res) {
       return res.send("Cannot find userId");
     }
     if (query.from) {
-      user.log = user.log.filter(function(el) {
-        return Date.parse(el.date) >= Date.parse(query.from);
+      user.log = user.log.filter((el) => {
+        const from = new Date(query.from).toUTCString().split(' ').slice(1, 4);
+        return Date.parse(el.date) >= Date.parse(from);
       });
     }
     if (query.to) {
-      user.log = user.log.filter(function(el) {
-        return Date.parse(el.date) <= Date.parse(query.to);
+      user.log = user.log.filter((el) => {
+        const to = new Date(query.to).toUTCString().split(' ').slice(1, 4);
+        return Date.parse(el.date) <= Date.parse(to);
       });
     }
     if (query.limit) {
-      user.log = user.log.slice(1, parseInt(query.limit) + 1);
+      user.log = user.log.slice(0, parseInt(query.limit));
     }
     user.count = user.log.length;
     delete user.__v;
